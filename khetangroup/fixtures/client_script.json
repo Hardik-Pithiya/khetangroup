@@ -443,11 +443,22 @@
   "docstatus": 0,
   "doctype": "Client Script",
   "dt": "Sales Invoice",
-  "enabled": 1,
-  "modified": "2023-11-07 15:34:08.039205",
+  "enabled": 0,
+  "modified": "2023-11-08 14:54:18.490552",
   "module": "khetangroup",
   "name": "Barcode",
   "script": "frappe.ui.form.on('Sales Invoice', {\n    new_scan_barcode: function(frm) {\n        // Get the value of new_scan_barcode field\n        var newScanBarcodeValue = frm.doc.new_scan_barcode;\n\n        // Find the index of the item if it already exists in the child table\n        var existingItemIndex = -1;\n\n        // Iterate through the child table rows to find the item\n        frm.doc.items.forEach(function(item, index) {\n            if (item.item_code === newScanBarcodeValue) {\n                existingItemIndex = index;\n                \n            }\n        });\n\n        // If the item already exists, increase the quantity\n        if (existingItemIndex !== -1) {\n            frappe.model.set_value(frm.doc.items[existingItemIndex].doctype, frm.doc.items[existingItemIndex].name, 'qty', frm.doc.items[existingItemIndex].qty + 1);\n        } else {\n          \n            var newRow = frappe.model.add_child(frm.doc, 'items');\n            frappe.model.set_value(newRow.doctype, newRow.name, 'item_code', newScanBarcodeValue);\n            frappe.model.set_value(newRow.doctype, newRow.name, 'qty', 1);\n             frappe.call({\n    \t        method:\"barcode\",\n    \t        args:{\"item_code\":newScanBarcodeValue},\n    \t        }).then(records =>{\n        \t    console.log(records.uom_details[0].uom)\n        \t    if(records !== null){\n        \t     frappe.model.set_value(newRow.doctype, newRow.name, 'uom', records.uom_details[0].uom);\n        \t    }\n           })\n       \n        }\n\n       \n        frm.refresh_field('items');\n       \n        cur_frm.doc.new_scan_barcode = ''\n    }\n});\n\n\nfrappe.ui.form.on('Sales Invoice', {\n    customer: function(frm) {\n        // Get the value of new_scan_barcode field\n        \n frm.clear_table('items');\n      \n    }\n});\n\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Sales Order",
+  "enabled": 1,
+  "modified": "2023-11-08 14:57:55.381561",
+  "module": "khetangroup",
+  "name": "sales scan",
+  "script": "frappe.ui.form.on('Sales Order', {\n    new_scan_barcode: function(frm) {\n        // Get the value of new_scan_barcode field\n        var newScanBarcodeValue = frm.doc.new_scan_barcode;\n\n        // Find the index of the item if it already exists in the child table\n        var existingItemIndex = -1;\n\n        // Iterate through the child table rows to find the item\n        frm.doc.items.forEach(function(item, index) {\n            if (item.item_code === newScanBarcodeValue) {\n                existingItemIndex = index;\n                \n            }\n        });\n\n        // If the item already exists, increase the quantity\n        if (existingItemIndex !== -1) {\n            frappe.model.set_value(frm.doc.items[existingItemIndex].doctype, frm.doc.items[existingItemIndex].name, 'qty', frm.doc.items[existingItemIndex].qty + 1);\n        } else {\n          \n            var newRow = frappe.model.add_child(frm.doc, 'items');\n            frappe.model.set_value(newRow.doctype, newRow.name, 'item_code', newScanBarcodeValue);\n            frappe.model.set_value(newRow.doctype, newRow.name, 'qty', 1);\n             frappe.call({\n    \t        method:\"barcode\",\n    \t        args:{\"item_code\":newScanBarcodeValue},\n    \t        }).then(records =>{\n        \t    console.log(records.uom_details[0].uom)\n        \t    if(records !== null){\n        \t     frappe.model.set_value(newRow.doctype, newRow.name, 'uom', records.uom_details[0].uom);\n        \t    }\n           })\n       \n        }\n\n       \n        frm.refresh_field('items');\n       \n        cur_frm.doc.new_scan_barcode = ''\n    }\n});\n\n\nfrappe.ui.form.on('Sales Order', {\n    customer: function(frm) {\n        // Get the value of new_scan_barcode field\n        \n frm.clear_table('items');\n      \n    }\n});\n\n",
   "view": "Form"
  }
 ]
